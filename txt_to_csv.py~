@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+import os
+import csv
+import re
+from collections import defaultdict
+
+def merge_txt_files_in_dir(results_dir):
+    """
+    For a given results directory,
+    merges txt files by type into merged_{x,p,e}.csv inside the same folder.
+    """
+    pattern = re.compile(r'r1E\d+gs_([xpe])\d+\.txt')
+    files_by_type = defaultdict(list)
+
+    # List files in this directory only
+    for file in os.listdir(results_dir):
+        match = pattern.match(file)
+        if match:
+            kind = match.group(1)
+            full_path = os.path.join(results_dir, file)
+            files_by_type[kind].append(full_path)
+
+    for kind, paths in files_by_type.items():
+        all_columns = []
+        max_len = 0
+
+        for path in sorted(paths):
+            with open(path, 'r') as f:
+                column = [line.strip() for line in f if line.strip()]
+                all_columns.append(column)
+                max_len = max(max_len, len(column))
+
+        # Pad shorter columns with empty strings
+        for col in all_columns:
+            col.extend([''] * (max_len - len(col)))
+
+        # Transpose columns to rows
+        merged_rows = zip(*all_columns)
+
+        out_path = os.path.join(results_dir, f'merged_{kind}.csv')
+        with open(out_path, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerows(merged_rows)
+
+        print(f"✅ In '{results_dir}': wrote {max_len} rows × {len(all_columns)} cols to '{out_path}'")
+
+def main():
+    base_dir = '.'  # Starting directory for search
+
+    # Walk through all directories looking for the specific 'Results' folders
+    for root, dirs, files in os.walk(base_dir):
+        # Check if current folder matches the Results folder pattern
+        if re.search(r'Season_.+_Region_.+_Results$', root):
+            merge_txt_files_in_dir(root)
+
+if __name__ == '__main__':
+    main()

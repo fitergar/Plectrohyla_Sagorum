@@ -1,0 +1,1 @@
+This directory contains maps corresponding to the distribution of individuals as well as heat maps, using the code output files. The images were created using QGIS.

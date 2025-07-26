@@ -1,0 +1,5 @@
+This directory contains the initial data, Gibbs Sampling codes, and results files for the Fall (Fa) season for all regions. 
+
+The initial data was constructed by a simulation of a Linear Poisson Process of intensity rho = 0.31 individuals/m.
+
+Density data and fieldwork methodology by season are reported in Section 2. Sections 3.3 and 3.4.

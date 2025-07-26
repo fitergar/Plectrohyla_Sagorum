@@ -1,0 +1,8 @@
+,Fa rho=0.31,Sp rho=0.56,Su rho=0.23,Wi rho=0.81
+,Fa K= 7,Sp K=9,Su K=7,Wi K=11
+,Fa T=0.2,Sp T=0.2,Su T=0.2,Wi T=0.2
+,Fa g=,Sp g=,Su g=,Wi g=
+Region 1,0.12,0.18,0.1,2
+Region 2,0.12,0.24,0.1,2
+Region 3,0.1,0.2,0.05,2
+Region 4,0.07,0.15,0.06,2
