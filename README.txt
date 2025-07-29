@@ -4,6 +4,6 @@ The files are organized by season, and within each season, by region. Each regio
 
 Parameters.csv contains the simulation parameters for each season and region.
 
-The neighborhood_structure directory holds information about the first-order neighborhood relations, which are required by the C source code. 
+The neighborhood_structure directory holds information about the first-order neighborhood relations, which are required by the C code. 
 
 Centroides-Elevacion_QGIS.csv provides the geographical coordinates of the grid structure used. This file is essential for reconstructing the distribution maps in QGIS.
