@@ -103,12 +103,11 @@ TThe grid is divided by the river into regions $\Lambda_1, \Lambda_2, \Lambda_3,
 Hamiltonian per region and season:
 
 $$
-H_0^{(i,x)}(\omega) = \sum_{s_1 \sim s_2} (\omega_{s_1} - \omega_{s_2})^2 
-+ \sum_{s \sim r, \, r \in R} (\omega_s - \boldsymbol{\omega}^x_r)^2
+H_0^{(i,x)}(\omega) = \sum_{s_1 \sim s_2} (\omega_{s_1} - \omega_{s_2})^2 + \sum_{s \sim r,  r \in R} (\omega_s - \boldsymbol{\omega}^x_r)^2
 $$
 
 $$
-V_{g^{(i,x)}}^{(i,x)}(\omega) = g^{(i,x)} \sum_{s \in \Lambda^i} d_s^2 \, \omega_s
+V_{g^{(i,x)}}^{(i,x)}(\omega) = g^{(i,x)} \sum_{s \in \Lambda^i} d_s^2 , \omega_s
 $$
 
 $$
