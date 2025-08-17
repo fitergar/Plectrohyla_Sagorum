@@ -98,17 +98,21 @@ $$
 
 ### 🗂 Conditional Probabilities per Region and Season
 
-The grid is divided by the river into regions $\Lambda_1, \Lambda_2, \Lambda_3, \Lambda_4$, with corresponding configuration spaces $\Omega^i$. For each region $i$ and season $x \in \{\rm Sp, Su, Fa, Wi\}$:
+TThe grid is divided by the river into regions $\Lambda_1, \Lambda_2, \Lambda_3, \Lambda_4$, with corresponding configuration spaces $\Omega^i$. For each region $i$ and season $x \in \{\rm Sp, Su, Fa, Wi\}$:
 
 Hamiltonian per region and season:
 
 $$
-\begin{array}{rcl}
-H_0^{(i,x)}(\omega) & = & \sum_{s_1 \sim s_2} (\omega_{s_1} - \omega_{s_2})^2
-+ \sum_{s \sim r, r \in R} (\omega_s - \boldsymbol{\omega}^x_r)^2, \\
-V_{g^{(i,x)}}^{(i,x)}(\omega) & = & g^{(i,x)} \sum_{s \in \Lambda^i} d_s^2 \, \omega_s, \\
-H^{(i,x)}(\omega) & = & H_0^{(i,x)}(\omega) + V_{g^{(i,x)}}^{(i,x)}(\omega)
-\end{array}
+H_0^{(i,x)}(\omega) = \sum_{s_1 \sim s_2} (\omega_{s_1} - \omega_{s_2})^2
++ \sum_{s \sim r, \, r \in R} (\omega_s - \boldsymbol{\omega}^x_r)^2
+$$
+
+$$
+V_{g^{(i,x)}}^{(i,x)}(\omega) = g^{(i,x)} \sum_{s \in \Lambda^i} d_s^2 \, \omega_s
+$$
+
+$$
+H^{(i,x)}(\omega) = H_0^{(i,x)}(\omega) + V_{g^{(i,x)}}^{(i,x)}(\omega)
 $$
 
 where $\boldsymbol{\omega}^x_r$ is the observed (or Poisson-simulated) number of individuals on the river cell $r$ for season $x$, and $g^{(i,x)}$ is the region- and season-specific coupling constant.
@@ -116,13 +120,13 @@ where $\boldsymbol{\omega}^x_r$ is the observed (or Poisson-simulated) number of
 Conditional probability of a configuration in region $i$ given river data:
 
 $$
-\pi^{(i,x)}(\omega) = \frac{1}{Z^{(i,x)}} \exp\Big(-\frac{1}{T} H^{(i,x)}(\omega)\Big),
+\pi^{(i,x)}(\omega) = \frac{1}{Z^{(i,x)}} \exp\Big(-\frac{1}{T} H^{(i,x)}(\omega)\Big)
 $$
 
 with partition function
 
 $$
-Z^{(i,x)} = \sum_{\omega \in \Omega^i} \exp\Big(-\frac{1}{T} H^{(i,x)}(\omega)\Big).
+Z^{(i,x)} = \sum_{\omega \in \Omega^i} \exp\Big(-\frac{1}{T} H^{(i,x)}(\omega)\Big)
 $$
 
 
