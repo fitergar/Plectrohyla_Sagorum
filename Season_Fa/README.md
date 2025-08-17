@@ -103,17 +103,14 @@ The grid is divided by the river into regions $\Lambda^1, \Lambda^2, \Lambda^3, 
 **Hamiltonian per region and season:**
 
 $$
-H_0^{(i,x)}(\omega) = \sum_{s_1 \sim s_2} (\omega_{s_1} - \omega_{s_2})^2
-+ \sum_{s \sim r, \, r \in R} (\omega_s - \boldsymbol{\omega}^x_r)^2
+\begin{array}{rcl}
+H_0^{(i,x)}(\omega) & = & \sum_{s_1 \sim s_2} (\omega_{s_1} - \omega_{s_2})^2
++ \sum_{s \sim r, \, r \in R} (\omega_s - \boldsymbol{\omega}^x_r)^2, \\
+V_{g^{(i,x)}}^{(i,x)}(\omega) & = & g^{(i,x)} \sum_{s \in \Lambda^i} d_s^2 \omega_s, \\
+H^{(i,x)}(\omega) & = & H_0^{(i,x)}(\omega) + V_{g^{(i,x)}}^{(i,x)}(\omega)
+\end{array}
 $$
 
-$$
-V_{g^{(i,x)}}^{(i,x)}(\omega) = g^{(i,x)} \sum_{s \in \Lambda^i} d_s^2 \, \omega_s
-$$
-
-$$
-H^{(i,x)}(\omega) = H_0^{(i,x)}(\omega) + V_{g^{(i,x)}}^{(i,x)}(\omega)
-$$
 
 where $\boldsymbol{\omega}^x_r$ is the observed (or Poisson-simulated) number of individuals on the river cell $r$ for season $x$, and $g^{(i,x)}$ is the region- and season-specific coupling constant.
 
