@@ -43,7 +43,52 @@ This yields **probability distributions** of frog abundance per location, recons
 
 ---
 
-## 📂 Repository Structure  
+---
 
-The repository mirrors the **seasonal and spatial segmentation** of the study.  
+## 📂 Repository Summary
+
+<details>
+<summary>Click to expand</summary>
+
+The repository reflects the **seasonal and spatial segmentation** of the study.  
+
+- **Seasons**:  
+  - `Season_Fa` → Fall  
+  - `Season_Sp` → Spring  
+  - `Season_Su` → Summer  
+  - `Season_Wi` → Winter  
+
+- **Regions**:  
+  Each season is further divided into four subdirectories:  
+  `Season_X_Region_1` through `Season_X_Region_4` (where `X` is Fa, Sp, Su, Wi).  
+  Each region contains:  
+  - A **C source file** (e.g., `Season_Fa_r1E3gs.c`)  
+  - A **compiled executable** (e.g., `Season_Fa_r1E3gs`)  
+  These implement the Gibbs sampling routines for stochastic predictions.  
+
+- **Parent directory contents**:  
+  - `Centroides-Elevacion_QGIS.csv` → Grid coordinates & elevations  
+  - `Neighborhood_Structure/` → Adjacency lists defining neighborhood structure  
+  - `parameters.csv` → Simulation parameters (population size `K`, coupling constant `g`, system temperature)  
+  - `Compile_all_c.sh`, `Execute_all_c.sh` → Shell scripts to compile & run all simulations  
+
+- **Running simulations**:  
+  1. Navigate to a specific region (e.g., `Season_Fa_Region_1_Gibbs_Sampling/`).  
+  2. Run the binary (e.g., `./Season_Fa_r1E3gs <tag>`).  
+     - The `<tag>` is appended to output filenames.  
+  3. Simulation outputs:  
+     - `*_x` → final state vector  
+     - `*_p` → ergodic average (expected value, for heat maps)  
+     - `*_e` → energy values (Hamiltonian) per iteration  
+
+- **Post-processing**:  
+  - `Join_by_ID.py` → Reconstructs full dataset across all regions into  
+    - `Data_Frame_Full_<Season>.csv` (QGIS-ready CSV)  
+    - `Grid_Full_<Season>.gpkg` (GeoPackage for direct GIS visualization)  
+  - `Run_N_Times.sh` → Batch runs across regions  
+  - `Stats.py` → Computes summary statistics from simulation results  
+
+Maintaining the provided folder structure is **essential**, as relative paths in the source code are hardcoded.
+
+</details>
 
