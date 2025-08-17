@@ -1,4 +1,4 @@
-# 🐸 Population Dynamics of *Plectrohyla sagorum*  
+# 🐸 Population Modeling of *Plectrohyla sagorum*  
 *A Hamiltonian & Geo-statistical Approach*
 
 ---
