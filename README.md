@@ -156,7 +156,7 @@ This procedure guarantees convergence to the **conditional stationary distributi
 - **Ergodic averages**: Expectation values used to reconstruct abundance distributions.
 - **Energy traces**: Diagnostic to monitor convergence.
 
-The method combines **functional analysis** (for the Hamiltonian), **Markov Chain Monte Carlo sampling** (for probability distributions), and **geospatial post-processing** (for mapping and analysis).
+The ergodic averages are used for the actual prediction and heat maps. 
 
 ---
 
