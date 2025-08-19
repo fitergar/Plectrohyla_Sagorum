@@ -60,7 +60,7 @@ $$
 \omega = (\omega_{i,j})_{(i,j) \in \Lambda},
 $$
 
-where $\omega_{i,j}$ is the state of cell $(i,j)$ and $\Lambda$ is the grid of all cells.  
+where $\omega_{i,j}$ is the average numbers of frogs in cell $(i,j)$ and $\Lambda$ is the grid of all cells.  
 
 The **energy functional** (Hamiltonian) is defined as:
 
