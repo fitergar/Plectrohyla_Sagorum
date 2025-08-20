@@ -80,7 +80,7 @@ $$
 V_g(\omega) = g \sum_{\ell \in \Lambda} d_\ell^2 \, \omega_\ell
 $$
 
-is a potential term representing the attraction to specific features (e.g., rivers), with $d_\ell$ the distance of cell $\ell$ to the feature and $g$ a coupling constant.
+is a potential term representing the attraction, with $d_\ell$ the distance of cell $\ell$ to the river and $g$ a coupling constant.
 
 The **probability of a configuration** is given by the Gibbs distribution:
 
@@ -88,7 +88,7 @@ $$
 \pi(\omega) = \frac{1}{Z} \exp\Big(-\frac{1}{T} H(\omega)\Big),
 $$
 
-where $T$ is a temperature parameter and $Z$ is the partition function:
+where T is a temperature parameter and Z is the partition function:
 
 $$
 Z = \sum_{\omega \in \Omega} \exp\Big(-\frac{1}{T} H(\omega)\Big).
@@ -98,12 +98,12 @@ $$
 
 ### 🗂 Conditional Probabilities per Region and Season
 
-TThe grid is divided by the river into regions $\Lambda_1, \Lambda_2, \Lambda_3, \Lambda_4$, with corresponding configuration spaces $\Omega^i$. For each region $i$ and season $x \in \{\rm Sp, Su, Fa, Wi\}$:
+TThe grid is divided by the river into regions $\Lambda_1, \Lambda_2, \Lambda_3, \Lambda_4$, with corresponding configuration spaces $\Omega^1,\Omega^2,\Omega^3,\Omega^4$. For each region $i\in \{1,2,3,4\}$, season $x \in \{\rm Sp, Su, Fa, Wi\}$ and $\omega\in \Omega^i$:
 
-Hamiltonian per region and season:
 
 $$
-H_0^{(i,x)}(\omega) = \sum_{s_1 \sim s_2} (\omega_{s_1} - \omega_{s_2})^2 + \sum_{s \sim r,  r \in R} (\omega_s - \boldsymbol{\omega}^x_r)^2
+H_0^{(i,x)}(\omega) = \sum_{s_1 \sim s_2} (\omega_{s_1} - \omega_{s_2})^2 +\sum_{\substack{s\sim r\\  r\in R}}(\omega_s-
+\boldsymbol{\omega}^{x}_r)^2
 $$
 
 $$
