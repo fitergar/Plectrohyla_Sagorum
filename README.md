@@ -160,50 +160,712 @@ The ergodic averages are used for the actual prediction and heat maps.
 
 ---
 
-## 📂 Repository Summary
+## 📂 Repository Structure
 
+<details>
+<summary>Parent Directory</summary>
+
+The parent directory contains three main components: **Geographic Data**, **Seasonal Directories**, and **Scripts**. This structure mirrors the spatial inputs, seasonal segmentation, and automation needed to run all experiments.
+
+---
+
+### 🌍 Geographic Data
 <details>
 <summary>Click to expand</summary>
 
-The repository reflects the **seasonal and spatial segmentation** of the study.  
+This section holds the spatial inputs used by the simulations. Objects created in **QGIS** receive a **unique feature ID**, which is used across files to consistently join geometry, centroids, neighborhoods, and model outputs.
 
-- **Seasons**:  
-  - `Season_Fa` → Fall  
-  - `Season_Sp` → Spring  
-  - `Season_Su` → Summer  
-  - `Season_Wi` → Winter  
+- **Neighborhood_Structure/**  
+  - One file per region (e.g., `r1_vecinos.txt` … `r4_vecinos.txt`).  
+  - Each row lists **neighbor QGIS IDs** for a given cell (first-order adjacency).  
+  - Used to define the neighborhood relation \( s_1 \sim s_2 \) in the Hamiltonian.
 
-- **Regions**:  
-  Each season is further divided into four subdirectories:  
-  `Season_X_Region_1` through `Season_X_Region_4` (where `X` is Fa, Sp, Su, Wi).  
-  Each region contains:  
-  - A **C source file** (e.g., `Season_Fa_r1E3gs.c`)  
-  - A **compiled executable** (e.g., `Season_Fa_r1E3gs`)  
-  These implement the Gibbs sampling routines for stochastic predictions.  
+- **Centroides-Elevacion_QGIS.csv**  
+  - Columns include: **ID**, **x**, **y**, **elevation**.  
+  - **ID** matches the QGIS feature ID for each cell.  
+  - Used to reconstruct spatial maps and bind results to coordinates.
 
-- **Parent directory contents**:  
-  - `Centroides-Elevacion_QGIS.csv` → Grid coordinates & elevations  
-  - `Neighborhood_Structure/` → Adjacency lists defining neighborhood structure  
-  - `parameters.csv` → Simulation parameters (population size `K`, coupling constant `g`, system temperature)  
-  - `Compile_all_c.sh`, `Execute_all_c.sh` → Shell scripts to compile & run all simulations  
+- **parameters.csv**  
+  List all parameters used for the simulations for each season and region. For each season there is a unique value of Temperature **T**, for maximum number of individuals on the river **K**, and density of individuales along the river **rho** and for each Season-Region pair there is a value for the coupling constant **g**
+</details>
 
-- **Running simulations**:  
-  1. Navigate to a specific region (e.g., `Season_Fa_Region_1_Gibbs_Sampling/`).  
-  2. Run the binary (e.g., `./Season_Fa_r1E3gs <tag>`).  
-     - The `<tag>` is appended to output filenames.  
-  3. Simulation outputs:  
-     - `*_x` → final state vector  
-     - `*_p` → ergodic average (expected value, for heat maps)  
-     - `*_e` → energy values (Hamiltonian) per iteration  
+---
 
-- **Post-processing**:  
-  - `Join_by_ID.py` → Reconstructs full dataset across all regions into  
-    - `Data_Frame_Full_<Season>.csv` (QGIS-ready CSV)  
-    - `Grid_Full_<Season>.gpkg` (GeoPackage for direct GIS visualization)  
-  - `Run_N_Times.sh` → Batch runs across regions  
-  - `Stats.py` → Computes summary statistics from simulation results  
+### 🍂🌸☀️❄️ Seasons
+<details>
+<summary>Click to expand</summary>
 
-Maintaining the provided folder structure is **essential**, as relative paths in the source code are hardcoded.
+Each season directory encapsulates **inputs, code, executables, and results** for that season, split into four spatial **regions**.  
+Every region includes:
+- `*_Data/` → Raw/derived inputs for that region (e.g., Poisson river counts, neighborhood lookups).
+- `*_Gibbs_Sampling/` → C source and compiled binaries for Gibbs/Metropolis simulation.
+- `*_Energy_Stabilization/` *(or `*_Stabilization/` in some regions)* → Convergence/energy plots.
+- `*_Results/` → Thousands of run artifacts: final states (`*_x`), ergodic means (`*_p`), energy traces (`*_e`).
+- `Stats.py` → Computes summary statistics from the region’s results.
+- `R?_IDs.csv` → QGIS/grid IDs for this region, used to merge outputs with coordinates.
+
+> **Output file semantics**
+> - `*_x` = final state vector (per grid cell; integer counts).
+> - `*_p` = ergodic average (expected counts per cell; used for heatmaps).
+> - `*_e` = Hamiltonian value by iteration (used to assess stabilization).
+
+---
+
+#### 🍂 Season_Fa (Fall) — `Season_Fa/`
+<details>
+<summary>Click to expand</summary>
+
+High-level contents for Fall:
+- `Data_Frame_Full_Fa.csv` → Region-merged outputs with grid IDs (QGIS-ready).
+- `Grid_Full_Fa.gpkg` → GeoPackage with full seasonal grid + attributes.
+- `Join_by_ID.py`, `Join_by_ID.py~` → Joins region outputs to grid IDs.
+- `Run_N_Times.sh`, `Run_N_Times.sh~` → Batch runner across regions.
+- `README.txt` → Season-level notes.
+- `Season_Fa_Maps/` → PNG/QML map products (heatmaps, styles).
+- `Season_Fa_Region_1/` … `Season_Fa_Region_4/` → Region workspaces.
+
+<details>
+<summary>Season_Fa_Maps/</summary>
+
+- `ArcoIris_Total_E3p31.png` → Rainbow palette heatmap of expected counts.
+- `GreyScale_Total_Fa.pgw` → World file (georeferencing) for the grayscale PNG.
+- `GreyScale_Total_Fa.png` → Grayscale heatmap of expected counts.
+- `IE3_p31.png` → Alternate color ramp map (E3 p=3.1 configuration).
+- `README.txt` → Layer/style notes.
+</details>
+
+<details>
+<summary>Season_Fa_Region_1/</summary>
+
+- `R1_IDs.csv` → Region 1 grid/QGIS IDs for join operations.
+- `README.txt` → Region 1 notes.
+
+<details>
+<summary>Season_Fa_Region_1_Data/</summary>
+
+- `r1E3_datos.txt` → Inputs for R1 (river counts, priors/parameters).
+- `README.txt` → Data dictionary and provenance.
+</details>
+
+<details>
+<summary>Season_Fa_Region_1_Energy_Stabilization/</summary>
+
+- `energia_R1E3.png` → Energy decay/stabilization overview.
+- `r1E3_energia.png` → Iteration-by-iteration Hamiltonian trace.
+- `README.txt` → How to read stabilization plots.
+</details>
+
+<details>
+<summary>Season_Fa_Region_1_Gibbs_Sampling/</summary>
+
+- `Season_Fa_r1E3gs.c`, `Season_Fa_r1E3gs.c~` → C source for Gibbs/Metropolis routine (R1).
+- `Season_Fa_r1E3gs` → **Executable**; run as: `./Season_Fa_r1E3gs <tag>`
+  - `<tag>` is appended to output basenames to keep runs separate.
+- `Season_Fa_r1E3_energia.c`, `Season_Fa_r1E3_energia.c~` → Energy-only utility.
+- `Season_Fa_r1E3_energia` → **Executable** to regenerate energy traces.
+- `README.txt` → Compile/run notes and parameter hints.
+
+> **Typical outputs created by `Season_Fa_r1E3gs`**
+> - `Season_Fa_r1E3gs_<tag>_x` → Final state vector.
+> - `Season_Fa_r1E3gs_<tag>_p` → Ergodic mean.
+> - `Season_Fa_r1E3gs_<tag>_e` → Energy per iteration.
+</details>
+
+- `Season_Fa_Region_1_Results/` → **(~2k files)** All `_x`, `_p`, `_e` artifacts for different tags/seeds.
+- `Stats.py`, `Stats.py~` → Summaries over `_p` and stabilization diagnostics.
+
+</details>
+
+<details>
+<summary>Season_Fa_Region_2/</summary>
+
+- `R2_IDs.csv` → Region 2 grid/QGIS IDs.
+- `README.txt` → Region 2 notes.
+
+<details>
+<summary>Season_Fa_Region_2_Data/</summary>
+
+- `r2E3_datos.txt` → Inputs for R2 (river counts/priors).
+- `README.txt` → Data dictionary.
+</details>
+
+<details>
+<summary>Season_Fa_Region_2_Stabilization/</summary>
+
+- `energia_R2E3.png` → Energy stabilization (overview).
+- `r2E3_energia.png` → Energy trace.
+- `README.txt` → Plot interpretation.
+</details>
+
+<details>
+<summary>Season_Fa_Region_2_Gibbs_Sampling/</summary>
+
+- `Season_Fa_r2E3gs.c`, `Season_Fa_r2E3gs.c~` → Gibbs/Metropolis source (R2).
+- `Season_Fa_r2E3gs` → **Executable**; usage: `./Season_Fa_r2E3gs <tag>`
+- `Season_Fa_r2E3_energia.c` → Energy utility source.
+- `Season_Fa_r2E3_energia` → **Executable** for energy plots.
+- `README.txt` → Build/run notes.
+
+> **Outputs**
+> - `Season_Fa_r2E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Fa_Region_2_Results/` → **(~2k files)** Run artifacts.
+- `Stats.py`, `Stats.py~` → Region stats.
+
+</details>
+
+<details>
+<summary>Season_Fa_Region_3/</summary>
+
+- `R3_IDs.csv` → Region 3 grid/QGIS IDs.
+- `README.txt` → Region 3 notes.
+
+<details>
+<summary>Season_Fa_Region_3_Data/</summary>
+
+- `r3E3_datos.txt` → Inputs for R3.
+- `README.txt` → Data dictionary.
+</details>
+
+<details>
+<summary>Season_Fa_Region_3_Energy_Stabilization/</summary>
+
+- `energia_R3E3.png` → Energy stabilization (overview).
+- `r3E3_energia.png` → Energy trace.
+- `README.txt` → Plot interpretation.
+</details>
+
+<details>
+<summary>Season_Fa_Region_3_Gibbs_Sampling/</summary>
+
+- `Season_Fa_r3E3gs.c`, `Season_Fa_r3E3gs.c~` → Gibbs/Metropolis source (R3).
+- `Season_Fa_r3E3gs` → **Executable**; usage: `./Season_Fa_r3E3gs <tag>`
+- `Season_Fa_r3E3_energia.c` → Energy utility source.
+- `Season_Fa_r3E3_energia` → **Executable**.
+- `README.txt` → Build/run notes.
+
+> **Outputs**
+> - `Season_Fa_r3E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Fa_Region_3_Results/` → **(~2k files)** Run artifacts.
+- `Stats.py`, `Stats.py~` → Region stats.
+
+</details>
+
+<details>
+<summary>Season_Fa_Region_4/</summary>
+
+- `R4_IDs.csv` → Region 4 grid/QGIS IDs.
+- `README.txt` → Region 4 notes.
+
+<details>
+<summary>Season_Fa_Region_4_Data/</summary>
+
+- `r4E3_datos.txt` → Inputs for R4.
+- `README.txt` → Data dictionary.
+</details>
+
+<details>
+<summary>Season_Fa_Region_4_Energy_Stabilization/</summary>
+
+- `energia_R4E3.png` → Energy stabilization (overview).
+- `r4E3_energia.png` → Energy trace.
+- `README.txt` → Plot interpretation.
+</details>
+
+<details>
+<summary>Season_Fa_Region_4_Gibbs_Sampling/</summary>
+
+- `Season_Fa_r4E3gs.c`, `Season_Fa_r4E3gs.c~` → Gibbs/Metropolis source (R4).
+- `Season_Fa_r4E3gs` → **Executable**; usage: `./Season_Fa_r4E3gs <tag>`
+- `Season_Fa_r4E3_energia.c`, `Season_Fa_r4E3_energia.c~` → Energy utility source.
+- `Season_Fa_r4E3_energia` → **Executable**.
+- `README.txt` → Build/run notes.
+
+> **Outputs**
+> - `Season_Fa_r4E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Fa_Region_4_Results/` → **(~2k files)** Run artifacts.
+- `Stats.py`, `Stats.py~` → Region stats.
+
+</details>
+
+</details>
+
+---
+
+#### 🌸 Season_Sp (Spring) — `Season_Sp/`
+<details>
+<summary>Click to expand</summary>
+
+High-level contents for Spring:
+- `Data_Frame_Full_Sp.csv`, `Grid_Full_Sp.gpkg`
+- `Join_by_ID.py`, `Join_by_ID.py~`
+- `Run_N_Times.sh`, `Run_N_Times.sh~`
+- `README.txt`
+- `Season_Sp_Maps/` *(seasonal map products; PNGs/QML similar to Fall)*
+- `Season_Sp_Region_1/` … `Season_Sp_Region_4/`
+
+> **Note**: Filenames mirror Fall but with the `Season_Sp_` prefix.
+
+<details>
+<summary>Season_Sp_Region_1/</summary>
+
+- `R1_IDs.csv`, `README.txt`
+
+<details>
+<summary>Season_Sp_Region_1_Data/</summary>
+
+- `r1E3_datos.txt`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Sp_Region_1_Energy_Stabilization/</summary>
+
+- `energia_R1E3.png`, `r1E3_energia.png`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Sp_Region_1_Gibbs_Sampling/</summary>
+
+- `Season_Sp_r1E3gs.c`, `Season_Sp_r1E3gs.c~`, `Season_Sp_r1E3gs` (**executable**)
+- `Season_Sp_r1E3_energia.c`, `Season_Sp_r1E3_energia` (**executable**)
+- `README.txt`
+
+> **Outputs**
+> - `Season_Sp_r1E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Sp_Region_1_Results/` (many files)
+- `Stats.py`, `Stats.py~`
+</details>
+
+<details>
+<summary>Season_Sp_Region_2/</summary>
+
+- `R2_IDs.csv`, `README.txt`
+
+<details>
+<summary>Season_Sp_Region_2_Data/</summary>
+
+- `r2E3_datos.txt`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Sp_Region_2_Energy_Stabilization/</summary>
+
+- `energia_R2E3.png`, `r2E3_energia.png`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Sp_Region_2_Gibbs_Sampling/</summary>
+
+- `Season_Sp_r2E3gs.c`, `Season_Sp_r2E3gs.c~`, `Season_Sp_r2E3gs` (**executable**)
+- `Season_Sp_r2E3_energia.c`, `Season_Sp_r2E3_energia` (**executable**)
+- `README.txt`
+
+> **Outputs**
+> - `Season_Sp_r2E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Sp_Region_2_Results/` (many files)
+- `Stats.py`, `Stats.py~`
+</details>
+
+<details>
+<summary>Season_Sp_Region_3/</summary>
+
+- `R3_IDs.csv`, `README.txt`
+
+<details>
+<summary>Season_Sp_Region_3_Data/</summary>
+
+- `r3E3_datos.txt`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Sp_Region_3_Energy_Stabilization/</summary>
+
+- `energia_R3E3.png`, `r3E3_energia.png`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Sp_Region_3_Gibbs_Sampling/</summary>
+
+- `Season_Sp_r3E3gs.c`, `Season_Sp_r3E3gs.c~`, `Season_Sp_r3E3gs` (**executable**)
+- `Season_Sp_r3E3_energia.c`, `Season_Sp_r3E3_energia` (**executable**)
+- `README.txt`
+
+> **Outputs**
+> - `Season_Sp_r3E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Sp_Region_3_Results/` (many files)
+- `Stats.py`, `Stats.py~`
+</details>
+
+<details>
+<summary>Season_Sp_Region_4/</summary>
+
+- `R4_IDs.csv`, `README.txt`
+
+<details>
+<summary>Season_Sp_Region_4_Data/</summary>
+
+- `r4E3_datos.txt`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Sp_Region_4_Energy_Stabilization/</summary>
+
+- `energia_R4E3.png`, `r4E3_energia.png`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Sp_Region_4_Gibbs_Sampling/</summary>
+
+- `Season_Sp_r4E3gs.c`, `Season_Sp_r4E3gs.c~`, `Season_Sp_r4E3gs` (**executable**)
+- `Season_Sp_r4E3_energia.c`, `Season_Sp_r4E3_energia` (**executable**)
+- `README.txt`
+
+> **Outputs**
+> - `Season_Sp_r4E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Sp_Region_4_Results/` (many files)
+- `Stats.py`, `Stats.py~`
+</details>
+
+</details>
+
+---
+
+#### ☀️ Season_Su (Summer) — `Season_Su/`
+<details>
+<summary>Click to expand</summary>
+
+High-level contents for Summer:
+- `Data_Frame_Full_Su.csv`, `Grid_Full_Su.gpkg`
+- `Join_by_ID.py`, `Join_by_ID.py~`
+- `Run_N_Times.sh`, `Run_N_Times.sh~`
+- `README.txt`
+- `Season_Su_Maps/` *(seasonal map products; PNGs/QML similar to Fall)*
+- `Season_Su_Region_1/` … `Season_Su_Region_4/`
+
+> **Note**: Filenames mirror Fall but with the `Season_Su_` prefix.
+
+<details>
+<summary>Season_Su_Region_1/</summary>
+
+- `R1_IDs.csv`, `README.txt`
+
+<details>
+<summary>Season_Su_Region_1_Data/</summary>
+
+- `r1E3_datos.txt`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Su_Region_1_Energy_Stabilization/</summary>
+
+- `energia_R1E3.png`, `r1E3_energia.png`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Su_Region_1_Gibbs_Sampling/</summary>
+
+- `Season_Su_r1E3gs.c`, `Season_Su_r1E3gs.c~`, `Season_Su_r1E3gs` (**executable**)
+- `Season_Su_r1E3_energia.c`, `Season_Su_r1E3_energia` (**executable**)
+- `README.txt`
+
+> **Outputs**
+> - `Season_Su_r1E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Su_Region_1_Results/` (many files)
+- `Stats.py`, `Stats.py~`
+</details>
+
+<details>
+<summary>Season_Su_Region_2/</summary>
+
+- `R2_IDs.csv`, `README.txt`
+
+<details>
+<summary>Season_Su_Region_2_Data/</summary>
+
+- `r2E3_datos.txt`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Su_Region_2_Energy_Stabilization/</summary>
+
+- `energia_R2E3.png`, `r2E3_energia.png`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Su_Region_2_Gibbs_Sampling/</summary>
+
+- `Season_Su_r2E3gs.c`, `Season_Su_r2E3gs.c~`, `Season_Su_r2E3gs` (**executable**)
+- `Season_Su_r2E3_energia.c`, `Season_Su_r2E3_energia` (**executable**)
+- `README.txt`
+
+> **Outputs**
+> - `Season_Su_r2E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Su_Region_2_Results/` (many files)
+- `Stats.py`, `Stats.py~`
+</details>
+
+<details>
+<summary>Season_Su_Region_3/</summary>
+
+- `R3_IDs.csv`, `README.txt`
+
+<details>
+<summary>Season_Su_Region_3_Data/</summary>
+
+- `r3E3_datos.txt`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Su_Region_3_Energy_Stabilization/</summary>
+
+- `energia_R3E3.png`, `r3E3_energia.png`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Su_Region_3_Gibbs_Sampling/</summary>
+
+- `Season_Su_r3E3gs.c`, `Season_Su_r3E3gs.c~`, `Season_Su_r3E3gs` (**executable**)
+- `Season_Su_r3E3_energia.c`, `Season_Su_r3E3_energia` (**executable**)
+- `README.txt`
+
+> **Outputs**
+> - `Season_Su_r3E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Su_Region_3_Results/` (many files)
+- `Stats.py`, `Stats.py~`
+</details>
+
+<details>
+<summary>Season_Su_Region_4/</summary>
+
+- `R4_IDs.csv`, `README.txt`
+
+<details>
+<summary>Season_Su_Region_4_Data/</summary>
+
+- `r4E3_datos.txt`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Su_Region_4_Energy_Stabilization/</summary>
+
+- `energia_R4E3.png`, `r4E3_energia.png`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Su_Region_4_Gibbs_Sampling/</summary>
+
+- `Season_Su_r4E3gs.c`, `Season_Su_r4E3gs.c~`, `Season_Su_r4E3gs` (**executable**)
+- `Season_Su_r4E3_energia.c`, `Season_Su_r4E3_energia` (**executable**)
+- `README.txt`
+
+> **Outputs**
+> - `Season_Su_r4E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Su_Region_4_Results/` (many files)
+- `Stats.py`, `Stats.py~`
+</details>
+
+</details>
+
+---
+
+#### ❄️ Season_Wi (Winter) — `Season_Wi/`
+<details>
+<summary>Click to expand</summary>
+
+High-level contents for Winter:
+- `Data_Frame_Full_Wi.csv`, `Grid_Full_Wi.gpkg`
+- `Join_by_ID.py`, `Join_by_ID.py~`
+- `Run_N_Times.sh`, `Run_N_Times.sh~`
+- `README.txt`
+- `Season_Wi_Maps/` *(seasonal map products; PNGs/QML similar to Fall)*
+- `Season_Wi_Region_1/` … `Season_Wi_Region_4/`
+
+> **Note**: Filenames mirror Fall but with the `Season_Wi_` prefix.
+
+<details>
+<summary>Season_Wi_Region_1/</summary>
+
+- `R1_IDs.csv`, `README.txt`
+
+<details>
+<summary>Season_Wi_Region_1_Data/</summary>
+
+- `r1E3_datos.txt`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Wi_Region_1_Energy_Stabilization/</summary>
+
+- `energia_R1E3.png`, `r1E3_energia.png`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Wi_Region_1_Gibbs_Sampling/</summary>
+
+- `Season_Wi_r1E3gs.c`, `Season_Wi_r1E3gs.c~`, `Season_Wi_r1E3gs` (**executable**)
+- `Season_Wi_r1E3_energia.c`, `Season_Wi_r1E3_energia` (**executable**)
+- `README.txt`
+
+> **Outputs**
+> - `Season_Wi_r1E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Wi_Region_1_Results/` (many files)
+- `Stats.py`, `Stats.py~`
+</details>
+
+<details>
+<summary>Season_Wi_Region_2/</summary>
+
+- `R2_IDs.csv`, `README.txt`
+
+<details>
+<summary>Season_Wi_Region_2_Data/</summary>
+
+- `r2E3_datos.txt`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Wi_Region_2_Energy_Stabilization/</summary>
+
+- `energia_R2E3.png`, `r2E3_energia.png`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Wi_Region_2_Gibbs_Sampling/</summary>
+
+- `Season_Wi_r2E3gs.c`, `Season_Wi_r2E3gs.c~`, `Season_Wi_r2E3gs` (**executable**)
+- `Season_Wi_r2E3_energia.c`, `Season_Wi_r2E3_energia` (**executable**)
+- `README.txt`
+
+> **Outputs**
+> - `Season_Wi_r2E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Wi_Region_2_Results/` (many files)
+- `Stats.py`, `Stats.py~`
+</details>
+
+<details>
+<summary>Season_Wi_Region_3/</summary>
+
+- `R3_IDs.csv`, `README.txt`
+
+<details>
+<summary>Season_Wi_Region_3_Data/</summary>
+
+- `r3E3_datos.txt`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Wi_Region_3_Energy_Stabilization/</summary>
+
+- `energia_R3E3.png`, `r3E3_energia.png`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Wi_Region_3_Gibbs_Sampling/</summary>
+
+- `Season_Wi_r3E3gs.c`, `Season_Wi_r3E3gs.c~`, `Season_Wi_r3E3gs` (**executable**)
+- `Season_Wi_r3E3_energia.c`, `Season_Wi_r3E3_energia` (**executable**)
+- `README.txt`
+
+> **Outputs**
+> - `Season_Wi_r3E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Wi_Region_3_Results/` (many files)
+- `Stats.py`, `Stats.py~`
+</details>
+
+<details>
+<summary>Season_Wi_Region_4/</summary>
+
+- `R4_IDs.csv`, `README.txt`
+
+<details>
+<summary>Season_Wi_Region_4_Data/</summary>
+
+- `r4E3_datos.txt`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Wi_Region_4_Energy_Stabilization/</summary>
+
+- `energia_R4E3.png`, `r4E3_energia.png`, `README.txt`
+</details>
+
+<details>
+<summary>Season_Wi_Region_4_Gibbs_Sampling/</summary>
+
+- `Season_Wi_r4E3gs.c`, `Season_Wi_r4E3gs.c~`, `Season_Wi_r4E3gs` (**executable**)
+- `Season_Wi_r4E3_energia.c`, `Season_Wi_r4E3_energia` (**executable**)
+- `README.txt`
+
+> **Outputs**
+> - `Season_Wi_r4E3gs_<tag>_x`, `..._p`, `..._e`
+</details>
+
+- `Season_Wi_Region_4_Results/` (many files)
+- `Stats.py`, `Stats.py~`
+</details>
+
+</details>
+
+</details>
+
+
+---
+
+### ⚙️ Scripts
+<details>
+<summary>Click to expand</summary>
+
+These scripts automate **compilation** and **execution** of all C programs across seasons and regions.
+
+- **`Compile_all_c.sh`**  
+  - **Purpose:** Compile all region-specific C sources with `gcc`.  
+  - **Assumes:** POSIX shell; `gcc` available on the system.  
+  - **Typical usage:**
+    ```bash
+    bash Compile_all_c.sh
+    ```
+  - **Effect:** Produces region executables (e.g., `Season_Fa_r1E3gs`) inside their respective season/region folders.
+
+- **`Execute_all_c.sh`**  
+  - **Purpose:** Execute all compiled binaries per season and region.  
+  - **Assumes:** Binaries already compiled; execute permission set (`chmod +x` if needed).  
+  - **Typical usage:**
+    ```bash
+    bash Execute_all_c.sh <tag>
+    ```
+  - **Behavior:** Passes `<tag>` to each binary; each run emits:
+    - `*_x` — final state vector  
+    - `*_p` — ergodic average (expected value)  
+    - `*_e` — energy (Hamiltonian) per iteration  
+
+</details>
 
 </details>
 
