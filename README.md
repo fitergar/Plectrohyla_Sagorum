@@ -7,7 +7,7 @@
 
 This repository contains the implementation of a **novel statistical mechanics-based approach** for studying **population dynamics** of individuals in ecology across different seasons of the year.  
 
-We apply our method to the case of the vulnerable amphibian **_Plectrohyla sagorum_** ([IUCN, 2020](https://www.iucnredlist.org/species/55853/54352590)), a stream-breeding frog inhabiting the **cloud forests of the Tacaná Volcano Biosphere Reserve, Chiapas, Mexico**.
+We apply our method to the case of the vulnerable amphibian **_Plectrohyla sagorum_** ([IUCN, 2020](https://www.iucnredlist.org/species/55853/a54352590)), a stream-breeding frog inhabiting the **cloud forests of the Tacaná Volcano Biosphere Reserve, Chiapas, Mexico**.
 
 Our approach combines:
 
@@ -21,7 +21,7 @@ This fusion allows us to generate **probability distributions of individuals** a
 
 ## 🧪 Methodology Highlights
 
-- Individuals’ distribution is modeled as a balance between:
+- Individuals' distribution is modeled as a balance between:
   - **Kinetic term** → spreading across the region  
   - **Potential term** → attraction to water bodies  
 
@@ -41,110 +41,106 @@ This yields **probability distributions** of frog abundance per location, recons
   - In the **dry season (winter)** → frogs cluster near streams.  
   - In the **rainy season** → frogs disperse farther away from the river.  
 
-
-
 ---
 
 ## 📐 Mathematical Method
 
 The simulation is based on a **lattice model with local interactions**, inspired by methods from statistical mechanics.
 
-- The study region is discretized into a **grid of sites**, each representing a spatial unit.
+- The study region is discretized into a **grid of sites** (see `Geographic Data/Centroides-Elevacion_QGIS.csv`), each representing a spatial unit.
 - Each site is assigned a **state variable**, which evolves according to:
-  - **Local rules** depending on the site’s attributes, and
-  - **Neighborhood interactions** defined by adjacency relations.
+  - **Local rules** depending on the site's attributes, and
+  - **Neighborhood interactions** defined by adjacency relations (see `Geographic Data/Neighborhood_Structure/`).
 
 Formally, the system configuration is represented by a vector:
 
-$$
+$
 \omega = (\omega_{i,j})_{(i,j) \in \Lambda},
-$$
+$
 
 where $\omega_{i,j}$ is the average numbers of frogs in cell $(i,j)$ and $\Lambda$ is the grid of all cells.  
 
 The **energy functional** (Hamiltonian) is defined as:
 
-$$
+$
 H(\omega) = H_0(\omega) + V_g(\omega),
-$$
+$
 
 where
 
-$$
+$
 H_0(\omega) = \sum_{\ell \sim \jmath} (\omega_\ell - \omega_\jmath)^2
-$$
+$
 
-represents local differences between neighboring cells (with $\ell \sim \jmath$ indicating neighbors), and
+represents local differences between neighboring cells (with $\ell \sim \jmath$ indicating neighbors from `Geographic Data/Neighborhood_Structure/r*_vecinos.txt`), and
 
-$$
+$
 V_g(\omega) = g \sum_{\ell \in \Lambda} d_\ell^2 \, \omega_\ell
-$$
+$
 
-is a potential term representing the attraction, with $d_\ell$ the distance of cell $\ell$ to the river and $g$ a coupling constant.
+is a potential term representing the attraction, with $d_\ell$ the distance of cell $\ell$ to the river and $g$ a coupling constant (stored in `Geographic Data/parameters.csv`).
 
 The **probability of a configuration** is given by the Gibbs distribution:
 
-$$
+$
 \pi(\omega) = \frac{1}{Z} \exp\Big(-\frac{1}{T} H(\omega)\Big),
-$$
+$
 
-where T is a temperature parameter and Z is the partition function:
+where T is a temperature parameter (from `Geographic Data/parameters.csv`) and Z is the partition function:
 
-$$
+$
 Z = \sum_{\omega \in \Omega} \exp\Big(-\frac{1}{T} H(\omega)\Big).
-$$
+$
 
 ---
 
 ### 🗂 Conditional Probabilities per Region and Season
 
-TThe grid is divided by the river into regions $\Lambda_1, \Lambda_2, \Lambda_3, \Lambda_4$, with corresponding configuration spaces $\Omega^1,\Omega^2,\Omega^3,\Omega^4$. For each region $i\in \{1,2,3,4\}$, season $x \in \{\rm Sp, Su, Fa, Wi\}$ and $\omega\in \Omega^i$:
+The grid is divided by the river into regions $\Lambda_1, \Lambda_2, \Lambda_3, \Lambda_4$, with corresponding configuration spaces $\Omega^1,\Omega^2,\Omega^3,\Omega^4$. For each region $i\in \{1,2,3,4\}$, season $x \in \{\rm Sp, Su, Fa, Wi\}$ and $\omega\in \Omega^i$:
 
-
-$$
+$
 H_0^{(i,x)}(\omega) = \sum_{s_1 \sim s_2} (\omega_{s_1} - \omega_{s_2})^2 +\sum_{\substack{s\sim r\\  r\in R}}(\omega_s-
 \boldsymbol{\omega}^{x}_r)^2
-$$
+$
 
-$$
+$
 V_{g^{(i,x)}}^{(i,x)}(\omega) = g^{(i,x)} \sum_{s \in \Lambda^i} d_s^2 , \omega_s
-$$
+$
 
-$$
+$
 H^{(i,x)}(\omega) = H_0^{(i,x)}(\omega) + V_{g^{(i,x)}}^{(i,x)}(\omega)
-$$
+$
 
-where $\boldsymbol{\omega}^x_r$ is the observed (or Poisson-simulated) number of individuals on the river cell $r$ for season $x$, and $g^{(i,x)}$ is the region- and season-specific coupling constant.
+where $\boldsymbol{\omega}^x_r$ is the observed (or Poisson-simulated) number of individuals on the river cell $r$ for season $x$ (found in `Season_*/Season_*_Region_*/Season_*_Region_*_Data/*_datos.txt`), and $g^{(i,x)}$ is the region- and season-specific coupling constant (stored in `Geographic Data/parameters.csv`).
 
 Conditional probability of a configuration in region $i$ given river data:
 
-$$
+$
 \pi^{(i,x)}(\omega) = \frac{1}{Z^{(i,x)}} \exp\Big(-\frac{1}{T} H^{(i,x)}(\omega)\Big)
-$$
+$
 
 with partition function
 
-$$
+$
 Z^{(i,x)} = \sum_{\omega \in \Omega^i} \exp\Big(-\frac{1}{T} H^{(i,x)}(\omega)\Big)
-$$
-
+$
 
 ---
 
 ### 🔄 Stochastic Simulation (Gibbs Sampling)
 
-A **Gibbs sampling sequence** is generated to approximate the equilibrium distribution:
+A **Gibbs sampling sequence** is generated to approximate the equilibrium distribution (implemented in `Season_*/Season_*_Region_*/Season_*_Region_*_Gibbs_Sampling/*.c`):
 
 1. Start from an initial configuration $\omega^{(0;i,x)} = 0$ for all $p \in \Lambda^i$.
-2. For each site $\ell_n$ in a fixed neighbor-order sequence, propose a new state $\tilde{\omega}_{\ell_n} \in \{0,1,\dots,K^x\}$.
+2. For each site $\ell_n$ in a fixed neighbor-order sequence, propose a new state $\tilde{\omega}_{\ell_n} \in \{0,1,\dots,K^x\}$ where $K^x$ is the seasonal carrying capacity (from `Geographic Data/parameters.csv`).
 3. Accept the proposal with probability:
 
-$$
+$
 P = \min\Bigg(1, \frac{\pi^{(i,x)}(\tilde{\omega})}{\pi^{(i,x)}(\omega^{(n-1;i,x)})}\Bigg)
 = \min\Bigg(1, \exp\Big(-\frac{1}{T} \big[ H^{(i,x)}(\tilde{\omega}) - H^{(i,x)}(\omega^{(n-1;i,x)}) \big] \Big)\Bigg).
-$$
+$
 
-4. Repeat for all sites and iterate until convergence.
+4. Repeat for all sites and iterate until convergence (monitored via energy traces in `Season_*/Season_*_Region_*/Season_*_Region_*_Energy_Stabilization/`).
 
 This procedure guarantees convergence to the **conditional stationary distribution** under standard conditions (aperiodicity and irreducibility).
 
@@ -152,11 +148,14 @@ This procedure guarantees convergence to the **conditional stationary distributi
 
 ### 📊 Outputs
 
-- **Final state vector** $(\omega^{(n;i,x)})$: One realization of the system.
-- **Ergodic averages**: Expectation values used to reconstruct abundance distributions.
-- **Energy traces**: Diagnostic to monitor convergence.
+The simulation generates three types of output files (stored in `Season_*/Season_*_Region_*/Season_*_Region_*_Results/`):
 
-The ergodic averages are used for the actual prediction and heat maps. 
+- **Final state vector** $(\omega^{(n;i,x)})$: One realization of the system (files `*_x`)
+- **Ergodic averages**: Expectation values used to reconstruct abundance distributions (files `*_p`)
+- **Energy traces**: Diagnostic to monitor convergence (files `*_e`)
+
+The ergodic averages are used for the actual prediction and heat maps (visualized in `Season_*/Season_*_Maps/`).
+
 
 ---
 
