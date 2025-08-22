@@ -1,4 +1,4 @@
-This repository contains the source code used in the article *A New Approach to Population Dynamics and Gibbs Measures: The Case of Plectrohyla sagorum.
+This repository contains the source code used in the article *Seasonal Spatial Distributions of Amphibians and Gibbs Measures: A New Approach Inspired in Hamiltonian Mechanics.   
 
 The files are organized by season, and within each season, by region. Each region folder includes the corresponding source code and a compiled version of the algorithm to run simulations.
 
